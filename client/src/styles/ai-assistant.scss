@@ -32,21 +32,46 @@
     }
   }
 
+  .ai-accept-field {
+    .form__field-holder{
+      margin-left: 1.75rem;
+      width: inherit;
+      background: #dde;
+      padding: 3px 6px;
+      border-radius: 5px;
+      font-size: 12px;
+      .form-check-input{
+        margin-left: 0;
+      }
+      .form-label{
+        margin-bottom: 0;
+      }
+    }
+
+    .ai-accept-field-field {
+      font-weight: bold;
+      //color: var(--ai-color);
+    }
+  }
+
+
   .ai-assisted-field {
     .form__field-label {
       color: var(--ai-color);
       display: flex;
-      align-content: center;
-
-      &:after {
+      align-items: flex-start;
+      justify-content: flex-start;
+      &:before {
         content: "AI";
+        display: inline-block;
+        vertical-align: middle;
         font-size: 0.75em;
         background-color: var(--ai-color);
         color: #fff;
-        padding: 0.2em 0.4em;
-        height: 2em;
+        padding: 1px 4px;
         border-radius: 3px;
-        margin-left: 0.5em;
+        margin-right: 0.5em;
+        white-space: nowrap;
       }
     }
   }

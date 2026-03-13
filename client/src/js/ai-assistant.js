@@ -100,16 +100,36 @@
             onclick: function (e) {
                 e.preventDefault();
 
-                if (!confirm("Are you sure you want to accept the AI content? This will overwrite the real fields.")) {
+                const button = this;
+                const form = button.closest("form");
+
+                // Collect checked field names for the confirmation message
+                const fieldsToUpdate = [];
+                form.find("[name^='AIAssistantAccept_']").each(function () {
+                    if ($(this).is(":checked")) {
+                        fieldsToUpdate.push(this.name.replace("AIAssistantAccept_", ""));
+                    }
+                });
+
+                if (!fieldsToUpdate.length) {
+                    alert("No fields selected. Please check at least one field to overwrite.");
                     return;
                 }
 
-                const button = this;
-                const form = button.closest("form");
+                if (!confirm("Are you sure you want to overwrite the following fields with AI content?\n\n- '" + fieldsToUpdate.join("'\n- '") + "'")) {
+                    return;
+                }
 
                 form.find("[name^='AIAssistantInfo_']").each(function () {
                     const aiField = $(this);
                     const fieldName = aiField.attr("name").replace("AIAssistantInfo_", "");
+
+                    // Skip fields whose accept checkbox is unchecked
+                    const acceptCheckbox = form.find("[name='AIAssistantAccept_" + fieldName + "']");
+                    if (acceptCheckbox.length && !acceptCheckbox.is(":checked")) {
+                        return;
+                    }
+
                     const realField = form.find("[name='" + fieldName + "']");
 
                     if (!realField.length) return;

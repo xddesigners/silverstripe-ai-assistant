@@ -3,10 +3,13 @@
 namespace XD\SilverstripeAIAssistant\Extensions;
 
 use SilverStripe\Core\Extension;
+use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\HeaderField;
 use SilverStripe\Forms\LiteralField;
 use SilverStripe\Forms\TextareaField;
+use SilverStripe\ORM\FieldType\DBHTMLText;
+use SilverStripe\ORM\FieldType\DBHTMLVarchar;
 
 class AIAssistantExtension extends Extension
 {
@@ -79,6 +82,21 @@ class AIAssistantExtension extends Extension
                 $aiField->setValue($this->owner->$fieldName);
 
                 $fields->addFieldToTab('Root.AI', $aiField);
+
+                // Checkbox to control whether this field is overwritten on accept
+                $fields->addFieldToTab(
+                    'Root.AI',
+                    CheckboxField::create(
+                        "AIAssistantAccept_$fieldName",
+                        $acceptFieldTitle = _t(
+                            __CLASS__ . '.AcceptField',
+                            'Accept <span class="ai-accept-field-field">\'{fieldName}\'</span>',
+                            ['fieldName' => $fieldName]
+                        )
+                    )->setTitle(DBHTMLVarchar::create()->setValue($acceptFieldTitle))
+                        ->setValue(1)
+                        ->addExtraClass('ai-accept-field')
+                );
             }
         }
 
