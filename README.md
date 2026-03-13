@@ -1,6 +1,6 @@
 # silverstripe-ai-assistant
 
-CMS AI assistant UI for SilverStripe, powered by [xddesigners/silverstripe-ai](../silverstripe-ai).
+CMS AI assistant UI for SilverStripe, powered by [xddesigners/silverstripe-ai](https://github.com/xddesigners/silverstripe-ai).
 
 Adds an **Assistant** tab to CMS edit forms, letting editors generate and preview AI-written content for any configured fields — without overwriting the real content until they explicitly accept it.
 
