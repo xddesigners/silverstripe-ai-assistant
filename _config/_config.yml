@@ -1,0 +1,25 @@
+---
+Name: silverstripe-ai-assistant
+After:
+  - 'silverstripe-ai'
+---
+SilverStripe\Admin\LeftAndMain:
+  extensions:
+    - XD\SilverstripeAIAssistant\Extensions\LeftAndMainExtension
+
+SilverStripe\CMS\Model\SiteTree:
+  ai_assisted_fields:
+    - Title
+    - Content
+    - MetaDescription
+#    - Summary
+  extensions:
+    - XD\SilverstripeAIAssistant\Extensions\AIAssistantExtension
+
+DNADesign\Elemental\Models\ElementContent:
+  ai_assisted_fields:
+    - Title
+    - HTML
+  extensions:
+    - XD\SilverstripeAIAssistant\Extensions\AIAssistantExtension
+  

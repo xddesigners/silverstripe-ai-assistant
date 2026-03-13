@@ -1,0 +1,53 @@
+:root {
+  --ai-color: #0a53be;
+}
+.ui-tab.ai-assistant-tab {
+  margin-left: auto !important;
+  order: 20;
+  a {
+    color: var(--ai-color) !important;
+    &:before {
+      content: "AI";
+      font-size: 0.75em;
+      background-color: var(--ai-color);
+      color: #fff;
+      padding: 0.2em 0.4em;
+      height: 2em;
+      border-radius: 3px;
+      margin-right: 0.5em;
+    }
+  }
+}
+
+.tab-pane.ai-assistant-tab {
+
+  .ai-assistant-prompt {
+    .form__field-label {
+      color: var(--ai-color);
+    }
+
+    textarea.ai-assistant-prompt {
+      color: var(--ai-color);
+      border-color: var(--ai-color);
+    }
+  }
+
+  .ai-assisted-field {
+    .form__field-label {
+      color: var(--ai-color);
+      display: flex;
+      align-content: center;
+
+      &:after {
+        content: "AI";
+        font-size: 0.75em;
+        background-color: var(--ai-color);
+        color: #fff;
+        padding: 0.2em 0.4em;
+        height: 2em;
+        border-radius: 3px;
+        margin-left: 0.5em;
+      }
+    }
+  }
+}
