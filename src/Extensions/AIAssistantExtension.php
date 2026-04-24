@@ -10,6 +10,7 @@ use SilverStripe\Forms\LiteralField;
 use SilverStripe\Forms\TextareaField;
 use SilverStripe\ORM\FieldType\DBHTMLText;
 use SilverStripe\ORM\FieldType\DBHTMLVarchar;
+use XD\SilverstripeAI\Services\AIClient;
 
 class AIAssistantExtension extends Extension
 {
@@ -19,6 +20,11 @@ class AIAssistantExtension extends Extension
 
     public function updateCMSFields(FieldList $fields)
     {
+
+        if(!AIClient::isEnabled()) {
+            return;
+        }
+
         // create tab for AI assistant
         $tab = $fields->findOrMakeTab('Root.AI', _t(__CLASS__ . '.AssistantTabName', 'Assistant'));
         $tab->addExtraClass('ai-assistant-tab');
