@@ -1,0 +1,10 @@
+de:
+  XD\SilverstripeAIAssistant\Extensions\AIAssistantExtension:
+    AssistantTabName: 'Assistent'
+    AIPrompt: 'KI-Prompt'
+    AIPromptDescription: 'Anweisungen für den KI-Assistenten angeben'
+    AIPromptPlaceholder: 'Verbessern Sie den Website-Inhalt auf Basis des vorhandenen Inhalts und des Titels. Behalten Sie denselben Tonfall und Stil bei.'
+    GenerateContent: 'Inhalt generieren'
+    AcceptAIContent: 'KI-Inhalt übernehmen'
+    AIAssistedFields: 'KI-unterstützte Felder'
+    AcceptField: 'Übernehmen <span class="ai-accept-field-field">''{fieldName}''</span>'

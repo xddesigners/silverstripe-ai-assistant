@@ -1,0 +1,10 @@
+fr:
+  XD\SilverstripeAIAssistant\Extensions\AIAssistantExtension:
+    AssistantTabName: 'Assistant'
+    AIPrompt: 'Prompt IA'
+    AIPromptDescription: 'Fournissez des instructions à l’assistant IA'
+    AIPromptPlaceholder: 'Améliorez le contenu du site à partir du contenu existant et du titre. Conservez le même ton et style.'
+    GenerateContent: 'Générer le contenu'
+    AcceptAIContent: 'Accepter le contenu IA'
+    AIAssistedFields: 'Champs assistés par l’IA'
+    AcceptField: 'Accepter <span class="ai-accept-field-field">''{fieldName}''</span>'

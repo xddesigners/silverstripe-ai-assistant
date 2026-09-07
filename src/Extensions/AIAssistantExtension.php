@@ -8,7 +8,6 @@ use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\HeaderField;
 use SilverStripe\Forms\LiteralField;
 use SilverStripe\Forms\TextareaField;
-use SilverStripe\ORM\FieldType\DBHTMLText;
 use SilverStripe\ORM\FieldType\DBHTMLVarchar;
 use XD\SilverstripeAI\Services\AIClient;
 
@@ -21,7 +20,18 @@ class AIAssistantExtension extends Extension
     public function updateCMSFields(FieldList $fields)
     {
 
-        if(!AIClient::isEnabled()) {
+        if (!AIClient::isEnabled()) {
+            return;
+        }
+
+        // Resolve the configured fields that actually exist on this record.
+        // If none apply, don't add an empty Assistant tab.
+        $assistedFields = array_values(array_filter(
+            array_unique($this->owner->config()->get('ai_assisted_fields') ?? []),
+            fn ($fieldName) => $this->owner->hasField($fieldName)
+        ));
+
+        if (!$assistedFields) {
             return;
         }
 
@@ -38,7 +48,7 @@ class AIAssistantExtension extends Extension
                     __CLASS__ . '.AIPromptDescription',
                     'Provide instructions for the AI assistant'
                 ))
-                ->setValue(_t(
+                ->setAttribute('placeholder', _t(
                     __CLASS__ . '.AIPromptPlaceholder',
                     'Improve the website content based on the existing content and the title. Keep the same tone of voice and style.'
                 ))
@@ -61,21 +71,19 @@ class AIAssistantExtension extends Extension
             HeaderField::create('AIAssistedFieldsHeader', _t(__CLASS__ . '.AIAssistedFields', 'AI Assisted Fields'))
         );
 
-        $assistedFields = array_unique($this->owner->config()->get('ai_assisted_fields'));
-
         if (count($assistedFields) > 0) {
             foreach ($assistedFields as $fieldName) {
                 if (!$this->owner->hasField($fieldName)) {
                     continue;
                 }
 
-                $ownerClass = $this->owner->ClassName;
+                // Use the record's own (translated) field label so the preview
+                // matches the real CMS field (Title → Titel, Content → Inhoud, ...).
+                $fieldTitle = $this->owner->fieldLabel($fieldName);
 
                 $aiField = $this->owner
                     ->dbObject($fieldName)
-                    ->scaffoldFormField(
-                        _t($ownerClass . '.' . $fieldName, $fieldName)
-                    );
+                    ->scaffoldFormField($fieldTitle);
 
                 if (!$aiField) {
                     continue;
@@ -84,7 +92,7 @@ class AIAssistantExtension extends Extension
                 // Clone field for AI assistant
                 $aiField->setName("AIAssistantInfo_$fieldName");
                 $aiField->addExtraClass('ai-assisted-field');
-                $aiField->setTitle(_t($ownerClass . '.' . $fieldName, $fieldName));
+                $aiField->setTitle($fieldTitle);
                 $aiField->setValue($this->owner->$fieldName);
 
                 $fields->addFieldToTab('Root.AI', $aiField);
@@ -97,7 +105,7 @@ class AIAssistantExtension extends Extension
                         $acceptFieldTitle = _t(
                             __CLASS__ . '.AcceptField',
                             'Accept <span class="ai-accept-field-field">\'{fieldName}\'</span>',
-                            ['fieldName' => $fieldName]
+                            ['fieldName' => $fieldTitle]
                         )
                     )->setTitle(DBHTMLVarchar::create()->setValue($acceptFieldTitle))
                         ->setValue(1)

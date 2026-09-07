@@ -1,6 +1,41 @@
 (function ($) {
     $.entwine("ss", function ($) {
 
+        // Translate helper: use the CMS i18n dictionary when available, fall back to English.
+        function t(key, fallback) {
+            return (window.ss && ss.i18n) ? ss.i18n._t(key, fallback) : fallback;
+        }
+
+        // Non-blocking inline notice shown inside the AI tab (replaces alert()).
+        function notify(message, type, $btn) {
+            const colors = { error: "#c0392b", info: "#31708f" };
+            let $anchor = ($btn && $btn.closest(".ai-assistant-actions").length)
+                ? $btn.closest(".ai-assistant-actions")
+                : $(".ai-assistant-actions").first();
+
+            if (!$anchor.length) {
+                alert(message); // last-resort fallback if the tab markup is absent
+                return;
+            }
+
+            $anchor.find(".ai-assistant-message").remove();
+
+            const $msg = $('<div class="ai-assistant-message" role="alert"></div>')
+                .text(message)
+                .css({
+                    margin: "8px 0",
+                    padding: "8px 12px",
+                    borderRadius: "4px",
+                    color: "#fff",
+                    background: colors[type] || colors.info
+                });
+
+            $anchor.append($msg);
+            setTimeout(function () {
+                $msg.fadeOut(300, function () { $msg.remove(); });
+            }, 5000);
+        }
+
         $(".js-ai-generate").entwine({
             onclick: function (e) {
                 e.preventDefault();
@@ -8,7 +43,7 @@
                 const button = this;
                 const form = button.closest("form");
 
-                button.prop("disabled", true).text("Generating…");
+                button.prop("disabled", true).text(t("AIAssistant.GENERATING", "Generating…"));
 
                 // Instructions (AI prompt)
                 const instructions = form
@@ -43,8 +78,6 @@
                     fields: fields
                 };
 
-                console.log("AI Request Payload:", payload);
-
                 $.ajax({
                     type: "POST",
                     url: "/ai/generate",
@@ -53,12 +86,12 @@
 
                     success: function (response) {
                         if (response.error) {
-                            alert(response.error);
+                            notify(response.error, "error", button);
                             return;
                         }
 
                         if (!response.fields) {
-                            alert("Invalid AI response");
+                            notify(t("AIAssistant.INVALID_RESPONSE", "Invalid AI response"), "error", button);
                             return;
                         }
 
@@ -83,14 +116,19 @@
                         });
                     },
 
-                    error: function () {
-                        alert("AI request failed");
+                    error: function (xhr) {
+                        // Prefer the server's (translated) error, e.g. rate-limit or CSRF messages.
+                        let msg = t("AIAssistant.REQUEST_FAILED", "AI request failed");
+                        if (xhr && xhr.responseJSON && xhr.responseJSON.error) {
+                            msg = xhr.responseJSON.error;
+                        }
+                        notify(msg, "error", button);
                     },
 
                     complete: function () {
                         button
                             .prop("disabled", false)
-                            .text("Generate content");
+                            .text(t("AIAssistant.GENERATE_CONTENT", "Generate content"));
                     }
                 });
             }
@@ -112,11 +150,13 @@
                 });
 
                 if (!fieldsToUpdate.length) {
-                    alert("No fields selected. Please check at least one field to overwrite.");
+                    notify(t("AIAssistant.NO_FIELDS_SELECTED", "No fields selected. Please check at least one field to overwrite."), "error", button);
                     return;
                 }
 
-                if (!confirm("Are you sure you want to overwrite the following fields with AI content?\n\n- '" + fieldsToUpdate.join("'\n- '") + "'")) {
+                // Native confirm is intentional here: overwriting real content is destructive.
+                const confirmMessage = t("AIAssistant.CONFIRM_OVERWRITE", "Are you sure you want to overwrite the following fields with AI content?");
+                if (!confirm(confirmMessage + "\n\n- '" + fieldsToUpdate.join("'\n- '") + "'")) {
                     return;
                 }
 
@@ -151,8 +191,8 @@
                 });
 
                 // Feedback
-                button.text("Content Accepted").prop("disabled", true);
-                setTimeout(() => button.text("Accept AI Content").prop("disabled", false), 2000);
+                button.text(t("AIAssistant.CONTENT_ACCEPTED", "Content Accepted")).prop("disabled", true);
+                setTimeout(() => button.text(t("AIAssistant.ACCEPT_AI_CONTENT", "Accept AI Content")).prop("disabled", false), 2000);
             }
         });
 
